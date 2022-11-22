@@ -1,8 +1,7 @@
 import { notFoundError } from "@/errors";
-import { exclude } from "@/utils/prisma-utils";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository, { ticketCreateData } from "@/repositories/tickets-repository";
-import { TicketType, TicketStatus } from "@prisma/client";
+import { TicketType, TicketStatus, Ticket } from "@prisma/client";
 
 async function listAllTycketTypes(): Promise<TicketType[]> {
   const result = await ticketRepository.findAllTycketTypes();
@@ -14,7 +13,9 @@ async function listAllTycketTypes(): Promise<TicketType[]> {
   return result;
 }
 
-async function getTicket(userId: number) {
+async function getTicket(userId: number): Promise<Ticket & {
+  TicketType: TicketType;
+}> {
   //criei uma função no enrollment repository pra me ajudar aqui, espero que n tenha problema
   const checkEnrollment = await enrollmentRepository.findEnrollmentByUserId(userId);
 
@@ -31,7 +32,9 @@ async function getTicket(userId: number) {
   return result;
 }
 
-async function createNewTicket(userId: number, ticketTypeId: number) {
+async function createNewTicket(userId: number, ticketTypeId: number): Promise<Ticket & {
+  TicketType: TicketType;
+}> {
   const checkEnrollment = await enrollmentRepository.findEnrollmentByUserId(userId);
 
   if (!checkEnrollment) {
